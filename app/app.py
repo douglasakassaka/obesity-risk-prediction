@@ -6,9 +6,14 @@ import joblib
 st.set_page_config(page_title="Obesity Risk Predictor", layout="wide")
 
 # Load the saved pipeline
+import os
 @st.cache_resource
 def load_model():
-    return joblib.load('app/model_pipeline.pkl')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(script_dir, 'model_pipeline.pkl')
+    if not os.path.exists(model_path):
+        model_path = os.path.join(script_dir, '..', '..', 'obesity-risk-prediction', 'app', 'model_pipeline.pkl')
+    return joblib.load(model_path)
 
 model = load_model()
 
