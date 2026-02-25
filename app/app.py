@@ -25,6 +25,70 @@ based on physical data and lifestyle habits.
 
 st.divider()
 
+# Variable Descriptions
+with st.expander("ℹ️ Variable Descriptions - Data Dictionary"):
+    st.markdown("""
+    ### 👤 Personal Data
+    - **Gender**: Sexo do paciente (Female/Male)
+    - **Age**: Idade do paciente em anos
+    - **Height**: Altura do paciente em metros
+    - **Weight**: Peso do paciente em quilogramas
+    - **family_history**: Histórico familiar de sobrepeso (yes/no)
+    
+    ### 🥗 Eating Habits (Hábitos Alimentares)
+    - **FAVC** (Frequent consumption of high-calorie food): Consumo frequente de alimentos com alto teor calórico (yes/no)
+    - **FCVC** (Frequency of Consumption of Vegetables): Frequência de consumo de vegetais nas refeições (escala 1-3)
+      - 1 = Nunca
+      - 2 = Às vezes
+      - 3 = Sempre
+    - **NCP** (Number of main meals): Número de refeições principais por dia (1-4)
+    - **CAEC** (Consumption of food between meals): Consumo de alimentos entre as refeições
+      - no = Não
+      - Sometimes = Às vezes
+      - Frequently = Frequentemente
+      - Always = Sempre
+    - **CH2O** (Consumption of water daily): Consumo diário de água em litros (escala 1-3)
+      - 1 = Menos de 1L
+      - 2 = 1-2L
+      - 3 = Mais de 2L
+    - **SCC** (Calories consumption monitoring): Monitora o consumo de calorias diariamente? (yes/no)
+    
+    ### 🏃 Lifestyle & Transport (Estilo de Vida e Transporte)
+    - **FAF** (Physical activity frequency): Frequência de atividade física por semana (escala 0-3)
+      - 0 = Nenhuma
+      - 1 = 1-2 dias
+      - 2 = 2-4 dias
+      - 3 = 4-5 dias
+    - **TUE** (Time using technology devices): Tempo de uso de dispositivos eletrônicos por dia (escala 0-2)
+      - 0 = 0-2 horas
+      - 1 = 3-5 horas
+      - 2 = Mais de 5 horas
+    - **SMOKE**: Fumante? (yes/no)
+    - **CALC** (Consumption of alcohol): Consumo de álcool
+      - no = Não
+      - Sometimes = Às vezes
+      - Frequently = Frequentemente
+      - Always = Sempre
+    - **MTRANS** (Transportation used): Meio de transporte principal utilizado
+      - Public_Transportation = Transporte público
+      - Automobile = Automóvel
+      - Motorbike = Motocicleta
+      - Bike = Bicicleta
+      - Walking = Caminhada
+    
+    ### 🎯 Target Variable (Variável Alvo)
+    - **Obesity**: Nível de obesidade classificado em 7 categorias:
+      - Insufficient_Weight = Peso insuficiente
+      - Normal_Weight = Peso normal
+      - Overweight_Level_I = Sobrepeso Nível I
+      - Overweight_Level_II = Sobrepeso Nível II
+      - Obesity_Type_I = Obesidade Tipo I
+      - Obesity_Type_II = Obesidade Tipo II
+      - Obesity_Type_III = Obesidade Tipo III
+    """)
+
+st.divider()
+
 # Creating columns for the layout
 col1, col2, col3 = st.columns(3)
 
