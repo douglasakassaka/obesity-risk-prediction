@@ -250,6 +250,7 @@ if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_widt
         position: relative;
         width: 100%;
         margin: 30px 0;
+        padding-top: 60px;
     }}
     .arrow-indicator {{
         position: absolute;
@@ -257,36 +258,39 @@ if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_widt
         left: {arrow_position}%;
         transform: translateX(-50%);
         text-align: center;
-        animation: bounce 2s infinite;
+        z-index: 100;
+        animation: bounce 1.5s ease-in-out infinite;
     }}
     @keyframes bounce {{
         0%, 100% {{ transform: translateX(-50%) translateY(0); }}
-        50% {{ transform: translateX(-50%) translateY(-10px); }}
+        50% {{ transform: translateX(-50%) translateY(-8px); }}
     }}
     .arrow-text {{
-        font-size: 14px;
+        font-size: 13px;
         font-weight: bold;
         color: #333;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
         background: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        padding: 5px 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        white-space: nowrap;
     }}
     .arrow {{
-        font-size: 40px;
-        line-height: 0.5;
+        font-size: 35px;
+        line-height: 0.8;
         color: {config['color']};
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
     }}
     .health-ruler {{
         display: flex;
         width: 100%;
         height: 70px;
-        margin-top: 50px;
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        position: relative;
+        z-index: 1;
     }}
     .ruler-segment {{
         flex: 1;
