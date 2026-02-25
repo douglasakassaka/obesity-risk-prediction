@@ -120,7 +120,7 @@ with col3:
 
 # Prediction Logic
 st.divider()
-if st.button("🔍 Predict Health Status", type="primary"):
+if st.button("🔍 Predict Health Status", type="primary", use_container_width=True):
     # Create a dictionary with the inputs
     input_data = {
         'Gender': gender, 'Age': age, 'Height': height, 'Weight': weight,
@@ -135,14 +135,147 @@ if st.button("🔍 Predict Health Status", type="primary"):
     # Get prediction
     prediction = model.predict(input_df)[0]
     
-    # Display Result
-    st.subheader("Diagnostic Result:")
-    # Formatting the result for better reading
-    result_display = prediction.replace("_", " ")
+    # Calculate BMI
+    bmi = weight / (height ** 2)
     
-    if "Obesity" in prediction:
-        st.error(f"Prediction: {result_display}")
-    elif "Overweight" in prediction:
-        st.warning(f"Prediction: {result_display}")
-    else:
-        st.success(f"Prediction: {result_display}")
+    # Display Results with enhanced visualization
+    st.divider()
+    st.header("📊 Health Assessment Results")
+    
+    # Create two columns for metrics
+    metric_col1, metric_col2, metric_col3 = st.columns(3)
+    
+    with metric_col1:
+        st.metric(label="📏 BMI Calculated", value=f"{bmi:.1f}")
+    
+    with metric_col2:
+        st.metric(label="⚖️ Weight", value=f"{weight} kg")
+    
+    with metric_col3:
+        st.metric(label="📐 Height", value=f"{height} m")
+    
+    st.divider()
+    
+    # Main result display with color coding
+    result_display = prediction.replace("_", " ").title()
+    
+    # Define status levels and recommendations
+    status_config = {
+        "Insufficient Weight": {
+            "emoji": "⚠️",
+            "color": "blue",
+            "message": "Peso Insuficiente",
+            "recommendation": "• Consulte um nutricionista para plano alimentar adequado\n• Avalie possíveis deficiências nutricionais\n• Considere suplementação se necessário"
+        },
+        "Normal Weight": {
+            "emoji": "✅",
+            "color": "green",
+            "message": "Peso Normal - Parabéns!",
+            "recommendation": "• Mantenha hábitos alimentares saudáveis\n• Continue praticando atividades físicas regulares\n• Realize check-ups preventivos anuais"
+        },
+        "Overweight Level I": {
+            "emoji": "⚡",
+            "color": "orange",
+            "message": "Sobrepeso Nível I",
+            "recommendation": "• Inicie ou intensifique atividade física (150 min/semana)\n• Ajuste padrão alimentar reduzindo calorias\n• Acompanhamento nutricional é recomendado"
+        },
+        "Overweight Level Ii": {
+            "emoji": "⚡",
+            "color": "orange",
+            "message": "Sobrepeso Nível II",
+            "recommendation": "• Consulte médico e nutricionista urgentemente\n• Estabeleça meta de redução de peso gradual\n• Atividade física supervisionada é importante"
+        },
+        "Obesity Type I": {
+            "emoji": "🔴",
+            "color": "red",
+            "message": "Obesidade Tipo I",
+            "recommendation": "• Acompanhamento médico multiprofissional necessário\n• Avalie riscos cardiovasculares e metabólicos\n• Plano estruturado de perda de peso com metas\n• Considere apoio psicológico"
+        },
+        "Obesity Type Ii": {
+            "emoji": "🔴",
+            "color": "red",
+            "message": "Obesidade Tipo II",
+            "recommendation": "• Tratamento médico intensivo é essencial\n• Avaliação de comorbidades (diabetes, hipertensão)\n• Considere tratamento farmacológico\n• Suporte multidisciplinar completo"
+        },
+        "Obesity Type Iii": {
+            "emoji": "🚨",
+            "color": "red",
+            "message": "Obesidade Tipo III (Mórbida)",
+            "recommendation": "• Procure atendimento médico especializado IMEDIATAMENTE\n• Avaliação para cirurgia bariátrica pode ser necessária\n• Monitoramento rigoroso de comorbidades\n• Suporte psicológico e nutricional intensivo"
+        }
+    }
+    
+    # Get configuration for current prediction
+    config = status_config.get(result_display, status_config["Normal Weight"])
+    
+    # Display result in colored container
+    if config["color"] == "green":
+        st.success(f"### {config['emoji']} {config['message']}")
+    elif config["color"] == "blue":
+        st.info(f"### {config['emoji']} {config['message']}")
+    elif config["color"] == "orange":
+        st.warning(f"### {config['emoji']} {config['message']}")
+    else:  # red
+        st.error(f"### {config['emoji']} {config['message']}")
+    
+    # Recommendations section
+    st.subheader("💡 Recomendações Médicas")
+    st.markdown(config["recommendation"])
+    
+    # Risk factors summary
+    st.divider()
+    st.subheader("📋 Resumo dos Fatores de Risco")
+    
+    risk_col1, risk_col2 = st.columns(2)
+    
+    with risk_col1:
+        st.markdown("**Fatores Positivos:**")
+        positive_factors = []
+        if faf >= 2:
+            positive_factors.append("✓ Atividade física regular")
+        if fcvc >= 2:
+            positive_factors.append("✓ Bom consumo de vegetais")
+        if ch2o >= 2:
+            positive_factors.append("✓ Boa hidratação")
+        if scc == "yes":
+            positive_factors.append("✓ Monitora calorias")
+        if smoke == "no":
+            positive_factors.append("✓ Não fumante")
+        if mtrans in ["Bike", "Walking"]:
+            positive_factors.append("✓ Transporte ativo")
+        
+        if positive_factors:
+            for factor in positive_factors:
+                st.write(factor)
+        else:
+            st.write("Nenhum fator positivo identificado")
+    
+    with risk_col2:
+        st.markdown("**Fatores de Atenção:**")
+        risk_factors = []
+        if faf == 0:
+            risk_factors.append("⚠ Sedentarismo")
+        if favc == "yes":
+            risk_factors.append("⚠ Alto consumo calórico")
+        if fcvc == 1:
+            risk_factors.append("⚠ Baixo consumo de vegetais")
+        if caec in ["Frequently", "Always"]:
+            risk_factors.append("⚠ Belisca frequentemente")
+        if ch2o == 1:
+            risk_factors.append("⚠ Baixa hidratação")
+        if tue == 2:
+            risk_factors.append("⚠ Muito tempo em telas")
+        if calc in ["Frequently", "Always"]:
+            risk_factors.append("⚠ Alto consumo de álcool")
+        if smoke == "yes":
+            risk_factors.append("⚠ Fumante")
+        
+        if risk_factors:
+            for factor in risk_factors:
+                st.write(factor)
+        else:
+            st.write("Nenhum fator de risco identificado")
+    
+    # Footer note
+    st.divider()
+    st.info("ℹ️ **Nota:** Esta é uma avaliação automatizada para apoio à decisão médica. Sempre consulte um profissional de saúde para diagnóstico e tratamento adequados.")
