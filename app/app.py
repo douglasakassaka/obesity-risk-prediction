@@ -224,77 +224,125 @@ if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_widt
     
     # Define categories in order
     categories = [
-        ("Insufficient Weight", "Peso\nInsuficiente", "#87CEEB"),
-        ("Normal Weight", "Peso\nNormal", "#28a745"),
-        ("Overweight Level I", "Sobrepeso\nNível I", "#ffc107"),
-        ("Overweight Level Ii", "Sobrepeso\nNível II", "#ff9800"),
-        ("Obesity Type I", "Obesidade\nTipo I", "#ff5722"),
-        ("Obesity Type Ii", "Obesidade\nTipo II", "#e53935"),
-        ("Obesity Type Iii", "Obesidade\nTipo III", "#b71c1c")
+        ("Insufficient Weight", "Peso Insuficiente", "#87CEEB", 0),
+        ("Normal Weight", "Peso Normal", "#28a745", 1),
+        ("Overweight Level I", "Sobrepeso Nível I", "#ffc107", 2),
+        ("Overweight Level Ii", "Sobrepeso Nível II", "#ff9800", 3),
+        ("Obesity Type I", "Obesidade Tipo I", "#ff5722", 4),
+        ("Obesity Type Ii", "Obesidade Tipo II", "#e53935", 5),
+        ("Obesity Type Iii", "Obesidade Tipo III", "#b71c1c", 6)
     ]
     
-    # Create the visual ruler
-    ruler_html = """
+    # Find current position
+    current_position = 1  # default
+    for cat_key, cat_label, cat_color, pos in categories:
+        if cat_key == result_display:
+            current_position = pos
+            break
+    
+    # Calculate arrow position (percentage)
+    arrow_position = (current_position / 6) * 100 + (100 / 14)  # Center of segment
+    
+    # Create the visual ruler with arrow
+    ruler_html = f"""
     <style>
-    .health-ruler {
+    .health-scale-container {{
+        position: relative;
+        width: 100%;
+        margin: 30px 0;
+    }}
+    .arrow-indicator {{
+        position: absolute;
+        top: 0;
+        left: {arrow_position}%;
+        transform: translateX(-50%);
+        text-align: center;
+        animation: bounce 2s infinite;
+    }}
+    @keyframes bounce {{
+        0%, 100% {{ transform: translateX(-50%) translateY(0); }}
+        50% {{ transform: translateX(-50%) translateY(-10px); }}
+    }}
+    .arrow-text {{
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+        background: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }}
+    .arrow {{
+        font-size: 40px;
+        line-height: 0.5;
+        color: {config['color']};
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }}
+    .health-ruler {{
         display: flex;
         width: 100%;
-        height: 80px;
-        margin: 20px 0;
+        height: 70px;
+        margin-top: 50px;
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .ruler-segment {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }}
+    .ruler-segment {{
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: bold;
+        font-size: 12px;
+        font-weight: 600;
         color: white;
         text-align: center;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        border-right: 2px solid rgba(255,255,255,0.3);
+        padding: 8px 4px;
+        position: relative;
         transition: all 0.3s ease;
-        border-right: 2px solid white;
-        padding: 5px;
-        line-height: 1.2;
-        white-space: pre-line;
-    }
-    .ruler-segment:last-child {
+    }}
+    .ruler-segment:last-child {{
         border-right: none;
-    }
-    .ruler-segment.active {
-        transform: scale(1.05);
-        box-shadow: 0 0 20px rgba(0,0,0,0.4);
-        z-index: 10;
+    }}
+    .ruler-segment.active {{
         font-size: 13px;
-        border: 3px solid #FFD700;
-    }
-    .result-indicator {
+        font-weight: 700;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+    }}
+    .result-box {{
         text-align: center;
-        font-size: 32px;
-        margin: 15px 0;
+        font-size: 28px;
+        margin-top: 25px;
+        padding: 15px;
         font-weight: bold;
-        color: """ + config['color'] + """;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
+        color: {config['color']};
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,240,240,0.9));
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border: 3px solid {config['color']};
+    }}
     </style>
-    <div class="health-ruler">
+    <div class="health-scale-container">
+        <div class="arrow-indicator">
+            <div class="arrow-text">Você está aqui</div>
+            <div class="arrow">▼</div>
+        </div>
+        <div class="health-ruler">
     """
     
-    for cat_key, cat_label, cat_color in categories:
+    for cat_key, cat_label, cat_color, pos in categories:
         active_class = "active" if cat_key == result_display else ""
         ruler_html += f'<div class="ruler-segment {active_class}" style="background-color: {cat_color};">{cat_label}</div>'
     
-    ruler_html += """
+    ruler_html += f"""
+        </div>
+        <div class="result-box">{config["emoji"]} {config["message"]}</div>
     </div>
     """
     
-    st.markdown(ruler_html, unsafe_allow_html=True)
-    
-    # Display the result prominently
-    st.markdown(f'<div class="result-indicator">{config["emoji"]} {config["message"]}</div>', unsafe_allow_html=True)
+    st.components.v1.html(ruler_html, height=250)
     
     # Recommendations section
     st.subheader("💡 Recomendações Médicas")
