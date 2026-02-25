@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Page configuration
-st.set_page_config(page_title="Obesity Risk Predictor", layout="wide")
+st.set_page_config(page_title="Preditor de Risco de Obesidade", layout="wide")
 
 # Load the saved pipeline
 import os
@@ -17,19 +17,19 @@ def load_model():
 model = load_model()
 
 # Header
-st.title("🏥 Obesity Risk Assessment System")
+st.title("🏥 Sistema de Avaliação de Risco de Obesidade")
 st.markdown("""
-This tool uses a Machine Learning model to assist medical professionals in identifying obesity risk levels 
-based on physical data and lifestyle habits.
+Esta ferramenta utiliza um modelo de Machine Learning para auxiliar profissionais de saúde na identificação 
+de níveis de risco de obesidade baseado em dados físicos e hábitos de vida.
 """)
 
 st.divider()
 
 # Variable Descriptions
-with st.expander("ℹ️ Variable Descriptions - Data Dictionary"):
+with st.expander("ℹ️ Descrição das Variáveis - Dicionário de Dados"):
     st.markdown("""
-    ### 👤 Personal Data
-    - **Gender**: Sexo do paciente (Female/Male)
+    ### 👤 Dados Pessoais
+    - **Gender**: Sexo do paciente (Feminino/Masculino)
     - **Age**: Idade do paciente em anos
     - **Height**: Altura do paciente em metros
     - **Weight**: Peso do paciente em quilogramas
@@ -93,34 +93,38 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.header("👤 Personal Data")
-    gender = st.selectbox("Gender", ["Female", "Male"])
-    age = st.number_input("Age", min_value=1, max_value=120, value=25)
-    height = st.number_input("Height (m)", min_value=1.0, max_value=2.5, value=1.70, step=0.01)
-    weight = st.number_input("Weight (kg)", min_value=10.0, max_value=300.0, value=70.0, step=0.1)
-    family_history = st.selectbox("Family History of Overweight?", ["yes", "no"])
+    st.header("👤 Dados Pessoais")
+    gender = st.selectbox("Sexo", ["Female", "Male"], format_func=lambda x: "Feminino" if x == "Female" else "Masculino")
+    age = st.number_input("Idade", min_value=1, max_value=120, value=25)
+    height = st.number_input("Altura (m)", min_value=1.0, max_value=2.5, value=1.70, step=0.01)
+    weight = st.number_input("Peso (kg)", min_value=10.0, max_value=300.0, value=70.0, step=0.1)
+    family_history = st.selectbox("Histórico Familiar de Sobrepeso?", ["yes", "no"], format_func=lambda x: "Sim" if x == "yes" else "Não")
 
 with col2:
-    st.header("🥗 Eating Habits")
-    favc = st.selectbox("Frequent consumption of high-calorie food?", ["yes", "no"])
-    fcvc = st.slider("Frequency of vegetable consumption (1-3)", 1, 3, 2)
-    ncp = st.slider("Number of main meals (1-4)", 1, 4, 3)
-    caec = st.selectbox("Consumption of food between meals", ["no", "Sometimes", "Frequently", "Always"])
-    ch2o = st.slider("Daily water consumption (1-3)", 1, 3, 2)
-    scc = st.selectbox("Daily calorie monitoring?", ["yes", "no"])
+    st.header("🥗 Hábitos Alimentares")
+    favc = st.selectbox("Consumo frequente de comida calórica?", ["yes", "no"], format_func=lambda x: "Sim" if x == "yes" else "Não")
+    fcvc = st.slider("Frequência de consumo de vegetais (1-3)", 1, 3, 2)
+    ncp = st.slider("Número de refeições principais (1-4)", 1, 4, 3)
+    caec = st.selectbox("Consumo de alimentos entre refeições", ["no", "Sometimes", "Frequently", "Always"], 
+                       format_func=lambda x: {"no": "Não", "Sometimes": "Às vezes", "Frequently": "Frequentemente", "Always": "Sempre"}[x])
+    ch2o = st.slider("Consumo diário de água (1-3)", 1, 3, 2)
+    scc = st.selectbox("Monitora calorias diariamente?", ["yes", "no"], format_func=lambda x: "Sim" if x == "yes" else "Não")
 
 with col3:
-    st.header("🏃 Lifestyle & Transport")
-    faf = st.slider("Physical activity frequency (0-3)", 0, 3, 1)
-    tue = st.slider("Time using electronic devices (0-2)", 0, 2, 1)
-    smoke = st.selectbox("Smoker?", ["yes", "no"])
-    calc = st.selectbox("Alcohol consumption", ["no", "Sometimes", "Frequently", "Always"])
-    mtrans = st.selectbox("Main mode of transport", 
-                          ["Public_Transportation", "Automobile", "Motorbike", "Bike", "Walking"])
+    st.header("🏃 Estilo de Vida e Transporte")
+    faf = st.slider("Frequência de atividade física (0-3)", 0, 3, 1)
+    tue = st.slider("Tempo usando dispositivos eletrônicos (0-2)", 0, 2, 1)
+    smoke = st.selectbox("Fumante?", ["yes", "no"], format_func=lambda x: "Sim" if x == "yes" else "Não")
+    calc = st.selectbox("Consumo de álcool", ["no", "Sometimes", "Frequently", "Always"],
+                       format_func=lambda x: {"no": "Não", "Sometimes": "Às vezes", "Frequently": "Frequentemente", "Always": "Sempre"}[x])
+    mtrans = st.selectbox("Principal meio de transporte", 
+                          ["Public_Transportation", "Automobile", "Motorbike", "Bike", "Walking"],
+                          format_func=lambda x: {"Public_Transportation": "Transporte Público", "Automobile": "Automóvel", 
+                                                 "Motorbike": "Motocicleta", "Bike": "Bicicleta", "Walking": "Caminhada"}[x])
 
 # Prediction Logic
 st.divider()
-if st.button("🔍 Predict Health Status", type="primary", use_container_width=True):
+if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_width=True):
     # Create a dictionary with the inputs
     input_data = {
         'Gender': gender, 'Age': age, 'Height': height, 'Weight': weight,
@@ -140,19 +144,19 @@ if st.button("🔍 Predict Health Status", type="primary", use_container_width=T
     
     # Display Results with enhanced visualization
     st.divider()
-    st.header("📊 Health Assessment Results")
+    st.header("📊 Resultados da Avaliação de Saúde")
     
     # Create two columns for metrics
     metric_col1, metric_col2, metric_col3 = st.columns(3)
     
     with metric_col1:
-        st.metric(label="📏 BMI Calculated", value=f"{bmi:.1f}")
+        st.metric(label="📏 IMC Calculado", value=f"{bmi:.1f}")
     
     with metric_col2:
-        st.metric(label="⚖️ Weight", value=f"{weight} kg")
+        st.metric(label="⚖️ Peso", value=f"{weight} kg")
     
     with metric_col3:
-        st.metric(label="📐 Height", value=f"{height} m")
+        st.metric(label="📐 Altura", value=f"{height} m")
     
     st.divider()
     
