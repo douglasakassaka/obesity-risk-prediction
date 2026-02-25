@@ -161,7 +161,43 @@ if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_widt
     st.divider()
     
     # Main result display with color coding
-    result_display = prediction.replace("_", " ").title()
+    model_prediction_key = prediction
+
+    # BMI-based sanity check to avoid unrealistic outputs
+    if bmi < 18.5:
+        bmi_prediction_key = "Insufficient_Weight"
+    elif bmi < 25:
+        bmi_prediction_key = "Normal_Weight"
+    elif bmi < 27.5:
+        bmi_prediction_key = "Overweight_Level_I"
+    elif bmi < 30:
+        bmi_prediction_key = "Overweight_Level_II"
+    elif bmi < 35:
+        bmi_prediction_key = "Obesity_Type_I"
+    elif bmi < 40:
+        bmi_prediction_key = "Obesity_Type_II"
+    else:
+        bmi_prediction_key = "Obesity_Type_III"
+
+    severity_order = {
+        "Insufficient_Weight": 0,
+        "Normal_Weight": 1,
+        "Overweight_Level_I": 2,
+        "Overweight_Level_II": 3,
+        "Obesity_Type_I": 4,
+        "Obesity_Type_II": 5,
+        "Obesity_Type_III": 6,
+    }
+
+    model_severity = severity_order.get(model_prediction_key, 1)
+    bmi_severity = severity_order.get(bmi_prediction_key, 1)
+
+    final_prediction_key = model_prediction_key
+    if bmi_severity > model_severity:
+        final_prediction_key = bmi_prediction_key
+        st.info("⚠️ O resultado foi ajustado com base no IMC para evitar inconsistências em valores extremos.")
+
+    result_display = final_prediction_key.replace("_", " ").title()
     
     # Define status levels and recommendations
     status_config = {
