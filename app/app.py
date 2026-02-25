@@ -167,60 +167,134 @@ if st.button("🔍 Avaliar Estado de Saúde", type="primary", use_container_widt
     status_config = {
         "Insufficient Weight": {
             "emoji": "⚠️",
-            "color": "blue",
+            "color": "#87CEEB",
             "message": "Peso Insuficiente",
-            "recommendation": "• Consulte um nutricionista para plano alimentar adequado\n• Avalie possíveis deficiências nutricionais\n• Considere suplementação se necessário"
+            "recommendation": "• Consulte um nutricionista para plano alimentar adequado\n• Avalie possíveis deficiências nutricionais\n• Considere suplementação se necessário",
+            "position": 0
         },
         "Normal Weight": {
             "emoji": "✅",
-            "color": "green",
+            "color": "#28a745",
             "message": "Peso Normal - Parabéns!",
-            "recommendation": "• Mantenha hábitos alimentares saudáveis\n• Continue praticando atividades físicas regulares\n• Realize check-ups preventivos anuais"
+            "recommendation": "• Mantenha hábitos alimentares saudáveis\n• Continue praticando atividades físicas regulares\n• Realize check-ups preventivos anuais",
+            "position": 1
         },
         "Overweight Level I": {
             "emoji": "⚡",
-            "color": "orange",
+            "color": "#ffc107",
             "message": "Sobrepeso Nível I",
-            "recommendation": "• Inicie ou intensifique atividade física (150 min/semana)\n• Ajuste padrão alimentar reduzindo calorias\n• Acompanhamento nutricional é recomendado"
+            "recommendation": "• Inicie ou intensifique atividade física (150 min/semana)\n• Ajuste padrão alimentar reduzindo calorias\n• Acompanhamento nutricional é recomendado",
+            "position": 2
         },
         "Overweight Level Ii": {
             "emoji": "⚡",
-            "color": "orange",
+            "color": "#ff9800",
             "message": "Sobrepeso Nível II",
-            "recommendation": "• Consulte médico e nutricionista urgentemente\n• Estabeleça meta de redução de peso gradual\n• Atividade física supervisionada é importante"
+            "recommendation": "• Consulte médico e nutricionista urgentemente\n• Estabeleça meta de redução de peso gradual\n• Atividade física supervisionada é importante",
+            "position": 3
         },
         "Obesity Type I": {
             "emoji": "🔴",
-            "color": "red",
+            "color": "#ff5722",
             "message": "Obesidade Tipo I",
-            "recommendation": "• Acompanhamento médico multiprofissional necessário\n• Avalie riscos cardiovasculares e metabólicos\n• Plano estruturado de perda de peso com metas\n• Considere apoio psicológico"
+            "recommendation": "• Acompanhamento médico multiprofissional necessário\n• Avalie riscos cardiovasculares e metabólicos\n• Plano estruturado de perda de peso com metas\n• Considere apoio psicológico",
+            "position": 4
         },
         "Obesity Type Ii": {
             "emoji": "🔴",
-            "color": "red",
+            "color": "#e53935",
             "message": "Obesidade Tipo II",
-            "recommendation": "• Tratamento médico intensivo é essencial\n• Avaliação de comorbidades (diabetes, hipertensão)\n• Considere tratamento farmacológico\n• Suporte multidisciplinar completo"
+            "recommendation": "• Tratamento médico intensivo é essencial\n• Avaliação de comorbidades (diabetes, hipertensão)\n• Considere tratamento farmacológico\n• Suporte multidisciplinar completo",
+            "position": 5
         },
         "Obesity Type Iii": {
             "emoji": "🚨",
-            "color": "red",
+            "color": "#b71c1c",
             "message": "Obesidade Tipo III (Mórbida)",
-            "recommendation": "• Procure atendimento médico especializado IMEDIATAMENTE\n• Avaliação para cirurgia bariátrica pode ser necessária\n• Monitoramento rigoroso de comorbidades\n• Suporte psicológico e nutricional intensivo"
+            "recommendation": "• Procure atendimento médico especializado IMEDIATAMENTE\n• Avaliação para cirurgia bariátrica pode ser necessária\n• Monitoramento rigoroso de comorbidades\n• Suporte psicológico e nutricional intensivo",
+            "position": 6
         }
     }
     
     # Get configuration for current prediction
     config = status_config.get(result_display, status_config["Normal Weight"])
     
-    # Display result in colored container
-    if config["color"] == "green":
-        st.success(f"### {config['emoji']} {config['message']}")
-    elif config["color"] == "blue":
-        st.info(f"### {config['emoji']} {config['message']}")
-    elif config["color"] == "orange":
-        st.warning(f"### {config['emoji']} {config['message']}")
-    else:  # red
-        st.error(f"### {config['emoji']} {config['message']}")
+    # Visual Ruler Scale
+    st.markdown("### 📊 Classificação do Estado de Saúde")
+    
+    # Define categories in order
+    categories = [
+        ("Insufficient Weight", "Peso\nInsuficiente", "#87CEEB"),
+        ("Normal Weight", "Peso\nNormal", "#28a745"),
+        ("Overweight Level I", "Sobrepeso\nNível I", "#ffc107"),
+        ("Overweight Level Ii", "Sobrepeso\nNível II", "#ff9800"),
+        ("Obesity Type I", "Obesidade\nTipo I", "#ff5722"),
+        ("Obesity Type Ii", "Obesidade\nTipo II", "#e53935"),
+        ("Obesity Type Iii", "Obesidade\nTipo III", "#b71c1c")
+    ]
+    
+    # Create the visual ruler
+    ruler_html = """
+    <style>
+    .health-ruler {
+        display: flex;
+        width: 100%;
+        height: 80px;
+        margin: 20px 0;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .ruler-segment {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        border-right: 2px solid white;
+        padding: 5px;
+        line-height: 1.2;
+        white-space: pre-line;
+    }
+    .ruler-segment:last-child {
+        border-right: none;
+    }
+    .ruler-segment.active {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        z-index: 10;
+        font-size: 13px;
+        border: 3px solid #FFD700;
+    }
+    .result-indicator {
+        text-align: center;
+        font-size: 32px;
+        margin: 15px 0;
+        font-weight: bold;
+        color: """ + config['color'] + """;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    </style>
+    <div class="health-ruler">
+    """
+    
+    for cat_key, cat_label, cat_color in categories:
+        active_class = "active" if cat_key == result_display else ""
+        ruler_html += f'<div class="ruler-segment {active_class}" style="background-color: {cat_color};">{cat_label}</div>'
+    
+    ruler_html += """
+    </div>
+    """
+    
+    st.markdown(ruler_html, unsafe_allow_html=True)
+    
+    # Display the result prominently
+    st.markdown(f'<div class="result-indicator">{config["emoji"]} {config["message"]}</div>', unsafe_allow_html=True)
     
     # Recommendations section
     st.subheader("💡 Recomendações Médicas")
